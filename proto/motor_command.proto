@@ -1,0 +1,56 @@
+syntax = "proto2";
+
+import "nanopb.proto";
+
+//package armnyak;
+
+// Regen command for python:
+// protoc --proto_path=arduino/proto --python_out=protoc arduino/proto/motor_command.proto
+
+message MotorInitProto {
+  // Required?!?! Why?
+  // It turns out that nanopb ignores optional fields, hence the deviation from
+  // Google norms.
+  required int32 address = 1;
+  required int32 enable_pin = 2;
+  required int32 dir_pin = 3;
+  required int32 step_pin = 4;
+  required int32 ms0_pin = 5;
+  required int32 ms1_pin = 6;
+  required int32 ms2_pin = 7;
+}
+
+message MotorMoveProto {
+  required int32 address = 1;
+  required bool direction = 2;
+  // Speeds are between 0.0 and 1.0.
+  required float max_speed = 3;
+  // We start at this min speed and will try to decelerate back to it.
+  required float min_speed = 4;
+  required uint32 steps = 5;
+  required bool disable_after_moving = 6;
+  // If set, used instead of steps.
+  required bool use_absolute_steps = 7;
+  required int32 absolute_steps = 8;
+}
+
+message MotorConfigProto {
+  required int32 address = 1;
+  required bool ms0 = 2;
+  required bool ms1 = 3;
+  required bool ms2 = 4;
+  required bool zero = 5;
+  required int32 min_steps = 6;
+  required int32 max_steps = 7;
+}
+
+message MotorMoveAllProto {
+  repeated MotorMoveProto motors = 1 [(nanopb).max_count = 8, (nanopb).fixed_count = true];
+  //required MotorMoveProto middle = 2;
+  //required MotorMoveProto top_right = 3;
+}
+
+message MotorTareProto {
+  required int32 address = 1;
+  required int32 tare_to_steps = 2;
+}
