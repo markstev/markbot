@@ -14,3 +14,12 @@ cc_library(name = "serial_module",
                "@markstev_tensixty//cc:interfaces"
            ]
 )
+
+cc_library(name = "motor",
+           srcs = ["motor.cc"],
+           hdrs = ["motor.h"],
+           deps = [
+               "//proto:motor_command_proto",
+               "@markstev_tensixty//cc:interfaces",
+         ]
+)

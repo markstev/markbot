@@ -1,5 +1,5 @@
-#ifndef ARMNYAK_ARDUINO_MOTOR_BANK_MODULE_H_
-#define ARMNYAK_ARDUINO_MOTOR_BANK_MODULE_H_
+#ifndef COM_GITHUB_MARKSTEV_MARKBOT_MOTOR_BANK_MODULE_H_
+#define COM_GITHUB_MARKSTEV_MARKBOT_MOTOR_BANK_MODULE_H_
 
 #include <stdio.h>
 #include <string.h>
@@ -170,4 +170,4 @@ class MotorBankModule : public arduinoio::UCModule {
 
 }  // namespace armnyak
 
-#endif  // ARMNYAK_ARDUINO_MOTOR_BANK_MODULE_H_
+#endif  // COM_GITHUB_MARKSTEV_MARKBOT_MOTOR_BANK_MODULE_H_

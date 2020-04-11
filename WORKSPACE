@@ -12,5 +12,24 @@ http_archive(
 git_repository(
 		name = "markstev_tensixty",
 		remote = "http://github.com/markstev/tensixty.git",
-    commit = "bf640054ff5854c4dee2112b5b7294666f8886b0",
+    commit = "fa8369382b6712422e9bae1c68c659c7c41fd32d",
+)
+
+git_repository(
+    name = "com_github_nanopb_nanopb",
+    remote = "https://github.com/nanopb/nanopb.git",
+    commit = "58699f8a737823eabe001d4c1cf7ab2684ced861",
+)
+
+git_repository(
+    name = "com_github_silvergasp_nanopb",
+    remote = "https://github.com/silvergasp/nanopb",
+    commit = "39f40c8acb034efe6e2e8be6785e2cc851d42e57",
+)
+
+git_repository(
+    name = "com_google_protobuf",
+    commit = "09745575a923640154bcf307fba8aedff47f240a",
+    remote = "https://github.com/protocolbuffers/protobuf",
+    shallow_since = "1558721209 -0700",
 )
