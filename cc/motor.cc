@@ -9,7 +9,7 @@ using std::abs;
 
 namespace markbot {
 
-Motor::Motor(tensixty::ArduinoInterface *arduino) : arduino_(arduino) {
+Motor::Motor() {
   pulse_state_ = false;
   current_absolute_steps_ = 0;
   target_absolute_steps_ = 0;
@@ -18,7 +18,9 @@ Motor::Motor(tensixty::ArduinoInterface *arduino) : arduino_(arduino) {
   step_progress_ = 0.0;
 }
 
-void Motor::Init(const MotorInitProto &init_proto) {
+void Motor::Init(const MotorInitProto &init_proto,
+    tensixty::ArduinoInterface *arduino) {
+  arduino_ = arduino;
   init_proto_ = init_proto;
   arduino_->setPinModeOutput(init_proto_.enable_pin);
   arduino_->setPinModeOutput(init_proto_.dir_pin);
@@ -61,6 +63,7 @@ void Motor::UpdateRamps() {
 }
 
 void Motor::Update(const MotorMoveProto &move_proto) {
+  if (arduino_ == nullptr) return;
   target_absolute_steps_ = max(min_steps_, min(max_steps_, move_proto.absolute_steps));
   min_speed_ = move_proto.min_speed;
   max_speed_ = move_proto.max_speed;
@@ -130,6 +133,7 @@ void Motor::Config(const MotorConfigProto &config) {
 
 void Motor::Tare(const int32_t tare_to_steps) {
   current_absolute_steps_ = tare_to_steps;
+  if (arduino_ == nullptr) return;
   UpdateRamps();
   MaybeDisableMotor();
 }

@@ -11,8 +11,8 @@ class Message {
   Message(unsigned char message_type, unsigned char length,
       unsigned char *data);
   Message(const Message &other);
-  unsigned char length() const { return length_; }
-  const unsigned char* data() const { return data_; }
+  unsigned char length() const { return length_ - 1; }
+  const unsigned char* data() const { return data_ + sizeof(unsigned char); }
   unsigned char type() const { return message_type_; }
   
  private:

@@ -9,9 +9,9 @@ namespace markbot {
 
 class Motor {
  public:
-  Motor(tensixty::ArduinoInterface *arduino);
+  Motor();
   
-  void Init(const MotorInitProto &init_proto);
+  void Init(const MotorInitProto &init_proto, tensixty::ArduinoInterface *arduino);
 
   uint32_t address() const;
 

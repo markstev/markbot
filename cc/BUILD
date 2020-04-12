@@ -23,3 +23,13 @@ cc_library(name = "motor",
                "@markstev_tensixty//cc:interfaces",
          ]
 )
+
+cc_library(name = "motor_bank_module",
+           srcs = ["motor_bank_module.cc"],
+           hdrs = ["motor_bank_module.h"],
+           deps = [
+               ":module_dispatcher",
+               ":motor",
+               "//proto:motor_command_proto",
+           ],
+)
