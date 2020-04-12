@@ -34,15 +34,15 @@ uint32_t Motor::address() const {
   return init_proto_.address;
 }
 
-void Motor::Update(const MotorMoveProto &move_proto) {
-  target_absolute_steps_ = max(min_steps_, min(max_steps_, move_proto.absolute_steps));
-  min_speed_ = move_proto.min_speed;
-  max_speed_ = move_proto.max_speed;
-  acceleration_ = move_proto.acceleration;
+void Motor::UpdateRamps() {
+  acceleration_ = abs(acceleration_);
   // min_speed = max_speed - a * t
   const int slowdown_time = (max_speed_ - min_speed_) / acceleration_;
+  step_speed_ = min_speed_;
   int decel_steps = max_speed_ * slowdown_time
     - acceleration_ / 2 * slowdown_time * slowdown_time;
+  printf("Steps needed to slow down: %d\n", decel_steps);
+  // TODO: calc accel steps instead here
   decel_steps = min(decel_steps, abs(target_absolute_steps_ - current_absolute_steps_) / 2);
 
   if (target_absolute_steps_ > current_absolute_steps_) {
@@ -51,11 +51,22 @@ void Motor::Update(const MotorMoveProto &move_proto) {
     start_slowdown_step_ = target_absolute_steps_ + decel_steps;
   }
   printf("Slowdown step = %d\n", start_slowdown_step_);
-  step_speed_ = min(max(step_speed_, min_speed_), max_speed_);
   step_progress_ = 0.0;
+  if (target_absolute_steps_ == current_absolute_steps_) {
+    step_speed_ = 0.0;
+  }
   arduino_->digitalWrite(init_proto_.dir_pin, Direction());
+  arduino_->digitalWrite(init_proto_.enable_pin, false);
+  MaybeDisableMotor();
+}
+
+void Motor::Update(const MotorMoveProto &move_proto) {
+  target_absolute_steps_ = max(min_steps_, min(max_steps_, move_proto.absolute_steps));
+  min_speed_ = move_proto.min_speed;
+  max_speed_ = move_proto.max_speed;
+  acceleration_ = move_proto.acceleration;
   disable_after_moving_ = move_proto.disable_after_moving;
-  MaybeDisableMotor(StepsRemaining());
+  UpdateRamps();
 }
 
 bool Motor::Direction() const {
@@ -67,7 +78,10 @@ uint32_t Motor::StepsRemaining() const {
 }
 
 void Motor::FastTick() {
-  if (current_absolute_steps_ == target_absolute_steps_) return;
+  if (current_absolute_steps_ == target_absolute_steps_) {
+    MaybeDisableMotor();
+    return;
+  }
   if (current_absolute_steps_ == start_slowdown_step_) {
     acceleration_ = -acceleration_;
   }
@@ -81,11 +95,11 @@ void Motor::FastTick() {
   }
 }
 
-bool Motor::MaybeDisableMotor(const uint32_t steps_remaining) {
-  if (steps_remaining == 0 && disable_after_moving_) {
+bool Motor::MaybeDisableMotor() {
+  const int steps_remaining = StepsRemaining();
+  if (steps_remaining != 0) return false;
+  if (disable_after_moving_) {
     arduino_->digitalWrite(init_proto_.enable_pin, true);
-  } else {
-    arduino_->digitalWrite(init_proto_.enable_pin, false);
   }
   if (steps_remaining == 0) {
     return true;
@@ -116,6 +130,8 @@ void Motor::Config(const MotorConfigProto &config) {
 
 void Motor::Tare(const int32_t tare_to_steps) {
   current_absolute_steps_ = tare_to_steps;
+  UpdateRamps();
+  MaybeDisableMotor();
 }
 
 }  // namespace markbot

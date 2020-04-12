@@ -16,15 +16,14 @@ message MotorInitProto {
 }
 
 message MotorMoveProto {
-  required int32 address = 1;
   // Speeds are between 0.0 and 1.0.
-  required float max_speed = 2;
+  required float max_speed = 1;
   // We start at this min speed and will try to decelerate back to it.
-  required float min_speed = 3;
-  required bool disable_after_moving = 4;
+  required float min_speed = 2;
+  required bool disable_after_moving = 3;
   // If set, used instead of steps.
-  required int32 absolute_steps = 5;
-  required float acceleration = 6;
+  required int32 absolute_steps = 4;
+  required float acceleration = 5;
 }
 
 message MotorConfigProto {
@@ -35,9 +34,7 @@ message MotorConfigProto {
 }
 
 message MotorMoveAllProto {
-  repeated MotorMoveProto motors = 1 [(nanopb).max_count = 8, (nanopb).fixed_count = true];
-  //required MotorMoveProto middle = 2;
-  //required MotorMoveProto top_right = 3;
+  repeated MotorMoveProto motors = 1 [(nanopb).max_count = 6, (nanopb).fixed_count = true];
 }
 
 message MotorTareProto {

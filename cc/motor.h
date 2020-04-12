@@ -24,7 +24,7 @@ class Motor {
   // Used for ISR mode.
   void FastTick();
 
-  bool MaybeDisableMotor(const uint32_t steps_remaining);
+  bool MaybeDisableMotor();
 
   bool Step();
 
@@ -35,6 +35,7 @@ class Motor {
   float speed() const { return step_speed_; }
 
  private:
+  void UpdateRamps();
   tensixty::ArduinoInterface *arduino_;
   MotorInitProto init_proto_;
 

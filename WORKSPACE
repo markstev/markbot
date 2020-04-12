@@ -12,7 +12,7 @@ http_archive(
 git_repository(
 		name = "markstev_tensixty",
 		remote = "http://github.com/markstev/tensixty.git",
-    commit = "fa8369382b6712422e9bae1c68c659c7c41fd32d",
+    commit = "56b46cd0ca5fb05ea311682aab70d4cb1d93c1b3",
 )
 
 git_repository(
