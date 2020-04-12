@@ -9,12 +9,12 @@ const unsigned int ENABLE_PIN = 40;
 const unsigned int DIR_PIN = 41;
 const unsigned int STEP_PIN = 42;
 
-void InitMotor(Motor *motor) {
+void InitMotor(tensixty::FakeArduino &arduino, Motor *motor) {
   MotorInitProto init_proto;
   init_proto.enable_pin = ENABLE_PIN;
   init_proto.dir_pin = DIR_PIN;
   init_proto.step_pin = STEP_PIN;
-  motor->Init(init_proto);
+  motor->Init(init_proto, &arduino);
 }
 
 void Configure(Motor *motor) {
@@ -27,16 +27,16 @@ void Configure(Motor *motor) {
 
 TEST(MotorTest, Init) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   EXPECT_EQ(motor.Direction(), false);
   EXPECT_EQ(motor.StepsRemaining(), 0);
 }
 
 TEST(MotorTest, Step) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   motor.FastTick();
   EXPECT_EQ(motor.StepsRemaining(), 0);
@@ -75,8 +75,8 @@ TEST(MotorTest, Step) {
 
 TEST(MotorTest, Tare) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   motor.FastTick();
   EXPECT_EQ(motor.StepsRemaining(), 0);
@@ -99,8 +99,8 @@ TEST(MotorTest, Tare) {
 
 TEST(MotorTest, ObserveMaxPositions) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   motor.FastTick();
   EXPECT_EQ(motor.StepsRemaining(), 0);
@@ -126,8 +126,8 @@ TEST(MotorTest, ObserveMaxPositions) {
 
 TEST(MotorTest, SpeedUpAtStart) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   {
     MotorConfigProto config;
     config.zero = true;
@@ -174,8 +174,8 @@ TEST(MotorTest, SpeedUpAtStart) {
 
 TEST(MotorTest, ReachMaxSpeedAndSlowBackDown) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   {
     MotorMoveProto move_proto;
@@ -219,8 +219,8 @@ TEST(MotorTest, ReachMaxSpeedAndSlowBackDown) {
 
 TEST(MotorTest, ReachMaxSpeedAndSlowBackDownNegativeAndOffset) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   motor.Tare(200);
   {
@@ -265,8 +265,8 @@ TEST(MotorTest, ReachMaxSpeedAndSlowBackDownNegativeAndOffset) {
 
 TEST(MotorTest, TriangleRamp) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   {
     MotorMoveProto move_proto;
@@ -296,8 +296,8 @@ TEST(MotorTest, TriangleRamp) {
 
 TEST(MotorTest, TriangleRampNegative) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   {
     MotorMoveProto move_proto;
@@ -327,8 +327,8 @@ TEST(MotorTest, TriangleRampNegative) {
 
 TEST(MotorTest, TareWhileMoving) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   {
     MotorMoveProto move_proto;
@@ -369,8 +369,8 @@ TEST(MotorTest, TareWhileMoving) {
 
 TEST(MotorTest, TareWhileMovingStop) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   {
     MotorMoveProto move_proto;
@@ -394,8 +394,8 @@ TEST(MotorTest, TareWhileMovingStop) {
 
 TEST(MotorTest, TareReverse) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   {
     MotorMoveProto move_proto;
@@ -426,8 +426,8 @@ TEST(MotorTest, TareReverse) {
 
 TEST(MotorTest, DisableAfterMoving) {
   tensixty::FakeArduino arduino;
-  Motor motor(&arduino);
-  InitMotor(&motor);
+  Motor motor;
+  InitMotor(arduino, &motor);
   Configure(&motor);
   EXPECT_EQ(arduino.testGetPinOutput(ENABLE_PIN), true);
   {
