@@ -11,7 +11,7 @@ ISR(TIMER2_COMPA_vect) {
 #endif  // not __x86_64__
 
 MotorBankModule::MotorBankModule(tensixty::ArduinoInterface *arduino)
-    : arduino_(arduino) {
+    : arduino_(arduino), request_report_(false) {
 #if not __x86_64__
   cli();//stop interrupts
 
@@ -36,6 +36,18 @@ MotorBankModule::MotorBankModule(tensixty::ArduinoInterface *arduino)
 }
 
 Message MotorBankModule::Tick() {
+  if (request_report_) {
+    request_report_ = false;
+    AllMotorReportProto report = AllMotorReportProto_init_zero;
+    for (int i = 0; i < NUM_MOTORS; ++i) {
+      report.motors[i].current_absolute_steps = MOTORS[i].current_position();
+    }
+    pb_ostream_t stream = pb_ostream_from_buffer(report_buffer_, sizeof(report_buffer_));
+    const bool status = pb_encode(&stream, AllMotorReportProto_fields, &report);
+    if (status) {
+      return Message(MOTOR_REPORT, stream.bytes_written, report_buffer_);
+    }
+  }
   return Message(0, nullptr);
 }
 
@@ -74,6 +86,10 @@ bool MotorBankModule::AcceptMessage(const Message &message) {
     case MOTOR_TARE: {
       PARSE_OR_RETURN(MotorTareProto, tare_proto, message.data(), message.length());
       MOTORS[tare_proto.address].Tare(tare_proto.tare_to_steps);
+      break;
+    }
+    case MOTOR_REQUEST_REPORT: {
+      request_report_ = true;
       break;
     }
     default:

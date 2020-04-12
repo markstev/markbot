@@ -20,7 +20,8 @@ const unsigned char MOTOR_INIT = 0x10;
 const unsigned char MOTOR_CONFIG = 0x11;
 const unsigned char MOTOR_MOVE = 0x12;
 const unsigned char MOTOR_TARE = 0x13;
-const unsigned char MOTOR_REPORT = 0x14;
+const unsigned char MOTOR_REQUEST_REPORT = 0x14;
+const unsigned char MOTOR_REPORT = 0x15;
 
 class MotorBankModule : public Module {
  public:
@@ -32,6 +33,9 @@ class MotorBankModule : public Module {
 
  private:
   tensixty::ArduinoInterface *arduino_;
+  // If true, compile and send a report on the next tick.
+  bool request_report_;
+  uint8_t report_buffer_[40];
 };
 
 }  // namespace markbot

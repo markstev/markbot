@@ -34,6 +34,8 @@ class Motor {
 
   float speed() const { return step_speed_; }
 
+  int32_t current_position() const { return current_absolute_steps_; }
+
  private:
   void UpdateRamps();
   tensixty::ArduinoInterface *arduino_;

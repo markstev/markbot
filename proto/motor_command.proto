@@ -42,7 +42,10 @@ message MotorTareProto {
   required int32 tare_to_steps = 2;
 }
 
-message MotorReport {
-  required int32 address = 1;
-  required int32 current_absolute_steps = 2;
+message MotorReportProto {
+  required int32 current_absolute_steps = 1;
+}
+
+message AllMotorReportProto {
+  repeated MotorReportProto motors = 1 [(nanopb).max_count = 6, (nanopb).fixed_count = true];
 }
