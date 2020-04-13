@@ -11,8 +11,8 @@ class Message {
   Message(unsigned char message_type, unsigned char length,
       unsigned char *data);
   Message(const Message &other);
-  unsigned char length() const { return length_ - 1; }
-  const unsigned char* data() const { return data_ + sizeof(unsigned char); }
+  unsigned char length() const { return length_ > 0 ? length_ - 1 : 0; }
+  const unsigned char* data() const { return data_ == nullptr ? nullptr : data_ + sizeof(unsigned char); }
   unsigned char type() const { return message_type_; }
   
  private:
@@ -46,6 +46,29 @@ class ModuleDispatcher {
   Module* modules_[20];
   int num_modules_;
 };
+
+// Here's what we're trying to do with this macro:
+//    MotorMoveAllProto command_proto = MotorMoveAllProto_init_zero;
+//    pb_istream_t stream = pb_istream_from_buffer(buffer, length - MOTOR_UPDATE_ALL_LENGTH - 1);
+//    const bool status = pb_decode(&stream, MotorMoveAllProto_fields, &command_proto);
+//    if (!status) return false;
+#define PARSE_OR_RETURN(proto_name, var_name, bytes_buffer, length) \
+  proto_name var_name = proto_name##_init_zero; \
+  { \
+    pb_istream_t stream = pb_istream_from_buffer((bytes_buffer), (length)); \
+    const bool status = pb_decode(&stream, proto_name##_fields, &var_name); \
+    if (!status) return false; \
+  }
+
+#define SERIALIZE(proto_name, var_name, bytes_buffer, length) {\
+    pb_ostream_t stream = pb_ostream_from_buffer((bytes_buffer), sizeof(bytes_buffer)); \
+    const bool status = pb_encode(&stream, proto_name##_fields, &(var_name)); \
+    length = status ? stream.bytes_written : 0; \
+  }
+
+//  pb_ostream_t stream = pb_ostream_from_buffer((bytes_buffer), sizeof(bytes_buffer)); \
+//  status = pb_encode(&stream, proto_name##_fields, &(var_name));
+
 
 }  // namespace markbot
 #endif  // MARKBOT_MODULE_DISPATCHER_H_

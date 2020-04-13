@@ -16,3 +16,13 @@ cc_test(name = "motor_test",
             "@google_googletest//:gtest_main",
             "@markstev_tensixty//tests:arduino_simulator"
         ])
+
+cc_test(name = "motor_bank_module_test",
+        srcs = ["motor_bank_module_test.cc"],
+        deps = [
+            "//cc:module_dispatcher",
+            "//cc:motor_bank_module",
+            "@google_googletest//:gtest",
+            "@google_googletest//:gtest_main",
+            "@markstev_tensixty//tests:arduino_simulator"
+        ])

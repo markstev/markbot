@@ -42,27 +42,15 @@ Message MotorBankModule::Tick() {
     for (int i = 0; i < NUM_MOTORS; ++i) {
       report.motors[i].current_absolute_steps = MOTORS[i].current_position();
     }
-    pb_ostream_t stream = pb_ostream_from_buffer(report_buffer_, sizeof(report_buffer_));
-    const bool status = pb_encode(&stream, AllMotorReportProto_fields, &report);
-    if (status) {
-      return Message(MOTOR_REPORT, stream.bytes_written, report_buffer_);
+    int bytes_written;
+    SERIALIZE(AllMotorReportProto, report, report_buffer_, bytes_written);
+    if (bytes_written > 0) {
+      return Message(MOTOR_REPORT, bytes_written, report_buffer_);
     }
   }
+  printf("Nothing to do\n");
   return Message(0, nullptr);
 }
-
-// Here's what we're trying to do with this macro:
-//    MotorMoveAllProto command_proto = MotorMoveAllProto_init_zero;
-//    pb_istream_t stream = pb_istream_from_buffer(buffer, length - MOTOR_UPDATE_ALL_LENGTH - 1);
-//    const bool status = pb_decode(&stream, MotorMoveAllProto_fields, &command_proto);
-//    if (!status) return false;
-#define PARSE_OR_RETURN(proto_name, var_name, bytes_buffer, length) \
-  proto_name var_name = proto_name##_init_zero; \
-  { \
-    pb_istream_t stream = pb_istream_from_buffer((bytes_buffer), (length)); \
-    const bool status = pb_decode(&stream, proto_name##_fields, &var_name); \
-    if (!status) return false; \
-  }
 
 bool MotorBankModule::AcceptMessage(const Message &message) {
   switch (message.type()) {
