@@ -31,6 +31,8 @@ class MotorBankModule : public Module {
 
   bool AcceptMessage(const Message &message) override;
 
+  Motor* motor(const int i);
+
  private:
   tensixty::ArduinoInterface *arduino_;
   // If true, compile and send a report on the next tick.

@@ -48,7 +48,6 @@ Message MotorBankModule::Tick() {
       return Message(MOTOR_REPORT, bytes_written, report_buffer_);
     }
   }
-  printf("Nothing to do\n");
   return Message(0, nullptr);
 }
 
@@ -84,6 +83,10 @@ bool MotorBankModule::AcceptMessage(const Message &message) {
       return false;
   }
   return true;
+}
+
+Motor* MotorBankModule::motor(const int i) {
+  return &MOTORS[i];
 }
 
 }  // namespace markbot

@@ -65,6 +65,7 @@ void Motor::UpdateRamps() {
 void Motor::Update(const MotorMoveProto &move_proto) {
   if (arduino_ == nullptr) return;
   target_absolute_steps_ = max(min_steps_, min(max_steps_, move_proto.absolute_steps));
+  printf("%d Move to %d\n", address(), target_absolute_steps_);
   min_speed_ = move_proto.min_speed;
   max_speed_ = move_proto.max_speed;
   acceleration_ = move_proto.acceleration;
@@ -81,6 +82,10 @@ uint32_t Motor::StepsRemaining() const {
 }
 
 void Motor::FastTick() {
+  if (arduino_ == nullptr) {
+    return;
+  }
+  printf("Motor %d is at %d with target %d\n", address(), current_absolute_steps_, target_absolute_steps_);
   if (current_absolute_steps_ == target_absolute_steps_) {
     MaybeDisableMotor();
     return;
