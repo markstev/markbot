@@ -21,7 +21,10 @@ PB_BIND(MotorMoveAllProto, MotorMoveAllProto, AUTO)
 PB_BIND(MotorTareProto, MotorTareProto, AUTO)
 
 
-PB_BIND(MotorReport, MotorReport, AUTO)
+PB_BIND(MotorReportProto, MotorReportProto, AUTO)
+
+
+PB_BIND(AllMotorReportProto, AllMotorReportProto, AUTO)
 
 
 

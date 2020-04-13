@@ -29,7 +29,6 @@ typedef struct _MotorInitProto {
 } MotorInitProto;
 
 typedef struct _MotorMoveProto {
-    int32_t address;
     float max_speed;
     float min_speed;
     bool disable_after_moving;
@@ -37,34 +36,39 @@ typedef struct _MotorMoveProto {
     float acceleration;
 } MotorMoveProto;
 
-typedef struct _MotorReport {
-    int32_t address;
+typedef struct _MotorReportProto {
     int32_t current_absolute_steps;
-} MotorReport;
+} MotorReportProto;
 
 typedef struct _MotorTareProto {
     int32_t address;
     int32_t tare_to_steps;
 } MotorTareProto;
 
+typedef struct _AllMotorReportProto {
+    MotorReportProto motors[6];
+} AllMotorReportProto;
+
 typedef struct _MotorMoveAllProto {
-    MotorMoveProto motors[8];
+    MotorMoveProto motors[6];
 } MotorMoveAllProto;
 
 
 /* Initializer values for message structs */
 #define MotorInitProto_init_default              {0, 0, 0, 0}
-#define MotorMoveProto_init_default              {0, 0, 0, 0, 0, 0}
+#define MotorMoveProto_init_default              {0, 0, 0, 0, 0}
 #define MotorConfigProto_init_default            {0, 0, 0, 0}
-#define MotorMoveAllProto_init_default           {{MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default}}
+#define MotorMoveAllProto_init_default           {{MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default, MotorMoveProto_init_default}}
 #define MotorTareProto_init_default              {0, 0}
-#define MotorReport_init_default                 {0, 0}
+#define MotorReportProto_init_default            {0}
+#define AllMotorReportProto_init_default         {{MotorReportProto_init_default, MotorReportProto_init_default, MotorReportProto_init_default, MotorReportProto_init_default, MotorReportProto_init_default, MotorReportProto_init_default}}
 #define MotorInitProto_init_zero                 {0, 0, 0, 0}
-#define MotorMoveProto_init_zero                 {0, 0, 0, 0, 0, 0}
+#define MotorMoveProto_init_zero                 {0, 0, 0, 0, 0}
 #define MotorConfigProto_init_zero               {0, 0, 0, 0}
-#define MotorMoveAllProto_init_zero              {{MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero}}
+#define MotorMoveAllProto_init_zero              {{MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero, MotorMoveProto_init_zero}}
 #define MotorTareProto_init_zero                 {0, 0}
-#define MotorReport_init_zero                    {0, 0}
+#define MotorReportProto_init_zero               {0}
+#define AllMotorReportProto_init_zero            {{MotorReportProto_init_zero, MotorReportProto_init_zero, MotorReportProto_init_zero, MotorReportProto_init_zero, MotorReportProto_init_zero, MotorReportProto_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define MotorConfigProto_address_tag             1
@@ -75,16 +79,15 @@ typedef struct _MotorMoveAllProto {
 #define MotorInitProto_enable_pin_tag            2
 #define MotorInitProto_dir_pin_tag               3
 #define MotorInitProto_step_pin_tag              4
-#define MotorMoveProto_address_tag               1
-#define MotorMoveProto_max_speed_tag             2
-#define MotorMoveProto_min_speed_tag             3
-#define MotorMoveProto_disable_after_moving_tag  4
-#define MotorMoveProto_absolute_steps_tag        5
-#define MotorMoveProto_acceleration_tag          6
-#define MotorReport_address_tag                  1
-#define MotorReport_current_absolute_steps_tag   2
+#define MotorMoveProto_max_speed_tag             1
+#define MotorMoveProto_min_speed_tag             2
+#define MotorMoveProto_disable_after_moving_tag  3
+#define MotorMoveProto_absolute_steps_tag        4
+#define MotorMoveProto_acceleration_tag          5
+#define MotorReportProto_current_absolute_steps_tag 1
 #define MotorTareProto_address_tag               1
 #define MotorTareProto_tare_to_steps_tag         2
+#define AllMotorReportProto_motors_tag           1
 #define MotorMoveAllProto_motors_tag             1
 
 /* Struct field encoding specification for nanopb */
@@ -97,12 +100,11 @@ X(a, STATIC,   REQUIRED, INT32,    step_pin,          4)
 #define MotorInitProto_DEFAULT NULL
 
 #define MotorMoveProto_FIELDLIST(X, a) \
-X(a, STATIC,   REQUIRED, INT32,    address,           1) \
-X(a, STATIC,   REQUIRED, FLOAT,    max_speed,         2) \
-X(a, STATIC,   REQUIRED, FLOAT,    min_speed,         3) \
-X(a, STATIC,   REQUIRED, BOOL,     disable_after_moving,   4) \
-X(a, STATIC,   REQUIRED, INT32,    absolute_steps,    5) \
-X(a, STATIC,   REQUIRED, FLOAT,    acceleration,      6)
+X(a, STATIC,   REQUIRED, FLOAT,    max_speed,         1) \
+X(a, STATIC,   REQUIRED, FLOAT,    min_speed,         2) \
+X(a, STATIC,   REQUIRED, BOOL,     disable_after_moving,   3) \
+X(a, STATIC,   REQUIRED, INT32,    absolute_steps,    4) \
+X(a, STATIC,   REQUIRED, FLOAT,    acceleration,      5)
 #define MotorMoveProto_CALLBACK NULL
 #define MotorMoveProto_DEFAULT NULL
 
@@ -126,18 +128,24 @@ X(a, STATIC,   REQUIRED, INT32,    tare_to_steps,     2)
 #define MotorTareProto_CALLBACK NULL
 #define MotorTareProto_DEFAULT NULL
 
-#define MotorReport_FIELDLIST(X, a) \
-X(a, STATIC,   REQUIRED, INT32,    address,           1) \
-X(a, STATIC,   REQUIRED, INT32,    current_absolute_steps,   2)
-#define MotorReport_CALLBACK NULL
-#define MotorReport_DEFAULT NULL
+#define MotorReportProto_FIELDLIST(X, a) \
+X(a, STATIC,   REQUIRED, INT32,    current_absolute_steps,   1)
+#define MotorReportProto_CALLBACK NULL
+#define MotorReportProto_DEFAULT NULL
+
+#define AllMotorReportProto_FIELDLIST(X, a) \
+X(a, STATIC,   FIXARRAY, MESSAGE,  motors,            1)
+#define AllMotorReportProto_CALLBACK NULL
+#define AllMotorReportProto_DEFAULT NULL
+#define AllMotorReportProto_motors_MSGTYPE MotorReportProto
 
 extern const pb_msgdesc_t MotorInitProto_msg;
 extern const pb_msgdesc_t MotorMoveProto_msg;
 extern const pb_msgdesc_t MotorConfigProto_msg;
 extern const pb_msgdesc_t MotorMoveAllProto_msg;
 extern const pb_msgdesc_t MotorTareProto_msg;
-extern const pb_msgdesc_t MotorReport_msg;
+extern const pb_msgdesc_t MotorReportProto_msg;
+extern const pb_msgdesc_t AllMotorReportProto_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define MotorInitProto_fields &MotorInitProto_msg
@@ -145,15 +153,17 @@ extern const pb_msgdesc_t MotorReport_msg;
 #define MotorConfigProto_fields &MotorConfigProto_msg
 #define MotorMoveAllProto_fields &MotorMoveAllProto_msg
 #define MotorTareProto_fields &MotorTareProto_msg
-#define MotorReport_fields &MotorReport_msg
+#define MotorReportProto_fields &MotorReportProto_msg
+#define AllMotorReportProto_fields &AllMotorReportProto_msg
 
 /* Maximum encoded size of messages (where known) */
 #define MotorInitProto_size                      44
-#define MotorMoveProto_size                      39
+#define MotorMoveProto_size                      28
 #define MotorConfigProto_size                    35
-#define MotorMoveAllProto_size                   328
+#define MotorMoveAllProto_size                   180
 #define MotorTareProto_size                      22
-#define MotorReport_size                         22
+#define MotorReportProto_size                    11
+#define AllMotorReportProto_size                 78
 
 #ifdef __cplusplus
 } /* extern "C" */
